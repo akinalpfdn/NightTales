@@ -15,7 +15,9 @@ import PhotosUI
 struct NightTalesApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Dream.self,
+            DreamSymbol.self,
+            DreamPattern.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
