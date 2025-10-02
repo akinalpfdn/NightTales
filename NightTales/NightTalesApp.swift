@@ -7,6 +7,9 @@
 
 import SwiftUI
 import SwiftData
+import FoundationModels
+import Speech
+import PhotosUI
 
 @main
 struct NightTalesApp: App {
