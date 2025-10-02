@@ -47,6 +47,11 @@ class HomeViewModel {
         dreams.isEmpty
     }
 
+    var streakStats: (current: Int, longest: Int, total: Int) {
+        let (current, longest) = StreakCalculator.calculateStreak(dreams: dreams)
+        return (current, longest, dreams.count)
+    }
+
     // MARK: - Init
     init(modelContext: ModelContext) {
         self.modelContext = modelContext

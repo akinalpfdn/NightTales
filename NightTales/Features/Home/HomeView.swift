@@ -48,10 +48,23 @@ struct HomeView: View {
 
                     // Dreams Grid/List
                     ScrollView {
-                        if gridLayout {
-                            dreamGrid
-                        } else {
-                            dreamList
+                        VStack(spacing: 16) {
+                            // Streak Widget
+                            let stats = viewModel.streakStats
+                            DreamStreakView(
+                                currentStreak: stats.current,
+                                longestStreak: stats.longest,
+                                totalDreams: stats.total
+                            )
+                            .padding(.horizontal)
+                            .padding(.top, 8)
+
+                            // Dreams
+                            if gridLayout {
+                                dreamGrid
+                            } else {
+                                dreamList
+                            }
                         }
                     }
                 }
