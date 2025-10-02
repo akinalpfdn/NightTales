@@ -11,8 +11,17 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
+        if hasCompletedOnboarding {
+            mainTabView
+        } else {
+            OnboardingView()
+        }
+    }
+
+    private var mainTabView: some View {
         TabView(selection: $selectedTab) {
             // Home Tab
             HomeView(viewModel: HomeViewModel(modelContext: modelContext))
