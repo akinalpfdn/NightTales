@@ -28,15 +28,15 @@ struct ContentView: View {
                     Label("Insights", systemImage: "chart.pie.fill")
                 }
 
-            // Symbols Tab (Placeholder)
-            PlaceholderView(title: "Symbols", icon: "book.closed.fill")
+            // Symbols Tab
+            SymbolLibraryView(modelContext: modelContext)
                 .tag(2)
                 .tabItem {
                     Label("Symbols", systemImage: "book.closed.fill")
                 }
 
-            // Settings Tab (Placeholder)
-            PlaceholderView(title: "Settings", icon: "gearshape.fill")
+            // Settings Tab
+            SettingsView(viewModel: SettingsViewModel(modelContext: modelContext))
                 .tag(3)
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")

@@ -36,15 +36,9 @@ struct InsightsView: View {
                         // Recurring Symbols
                         symbolsSection
 
-                        // Emotional Trends
-                        if !viewModel.emotionalTrends.isEmpty {
-                            emotionalTrendsSection
-                        }
-
-                        // AI Recommendations
-                        if let patterns = viewModel.patterns,
-                           !patterns.recommendations.isEmpty {
-                            recommendationsSection
+                        // Pattern Analysis Card
+                        if let patterns = viewModel.patterns {
+                            PatternCardView(pattern: patterns)
                         }
 
                         // Generate Button
@@ -156,10 +150,7 @@ struct InsightsView: View {
             }
 
             if !viewModel.recurringSymbols.isEmpty {
-                Text("Symbol Cloud - Step 5.4")
-                    .foregroundStyle(.white.opacity(0.7))
-                    .frame(height: 150)
-                    .frame(maxWidth: .infinity)
+                SymbolCloudView(symbols: viewModel.recurringSymbols)
             } else {
                 Text("No recurring symbols yet")
                     .font(.subheadline)
