@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @Bindable var viewModel: SettingsViewModel
@@ -56,6 +57,29 @@ struct SettingsView: View {
         } message: {
             if let message = viewModel.exportMessage {
                 Text(message)
+            }
+        }
+        .alert("Import Complete", isPresented: .constant(viewModel.importMessage != nil)) {
+            Button("OK") {
+                viewModel.importMessage = nil
+            }
+        } message: {
+            if let message = viewModel.importMessage {
+                Text(message)
+            }
+        }
+        .fileImporter(
+            isPresented: $viewModel.showFilePicker,
+            allowedContentTypes: [.json],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    viewModel.importDreams(from: url)
+                }
+            case .failure(let error):
+                viewModel.importMessage = "Failed to select file: \(error.localizedDescription)"
             }
         }
     }
@@ -228,6 +252,31 @@ struct SettingsView: View {
                 }
                 .dreamGlass(.calm, shape: AnyShape(RoundedRectangle(cornerRadius: 12)))
                 .disabled(viewModel.isExporting)
+
+                // Import Button
+                Button {
+                    viewModel.showFilePicker = true
+                } label: {
+                    HStack {
+                        Label("Import Dreams", systemImage: "square.and.arrow.down")
+                            .foregroundStyle(.white)
+                            .font(.subheadline.weight(.medium))
+
+                        Spacer()
+
+                        if viewModel.isImporting {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.white.opacity(0.6))
+                                .font(.caption)
+                        }
+                    }
+                    .padding(16)
+                }
+                .dreamGlass(.calm, shape: AnyShape(RoundedRectangle(cornerRadius: 12)))
+                .disabled(viewModel.isImporting)
 
                 // Delete Button
                 Button {

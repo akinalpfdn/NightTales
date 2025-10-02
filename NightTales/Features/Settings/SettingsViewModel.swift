@@ -31,14 +31,21 @@ final class SettingsViewModel {
 
     var showDeleteConfirmation = false
     var isExporting = false
+    var isImporting = false
+    var showFilePicker = false
     var exportMessage: String?
+    var importMessage: String?
 
     private let modelContext: ModelContext
+    private var dataService: DataService?
 
     // MARK: - Initialization
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
+
+        // Initialize DataService
+        self.dataService = DataService(modelContainer: modelContext.container)
 
         // Load saved preferences
         self.dailyReminderEnabled = UserDefaults.standard.bool(forKey: "dailyReminderEnabled")
@@ -67,28 +74,42 @@ final class SettingsViewModel {
 
         Task {
             do {
-                let descriptor = FetchDescriptor<Dream>(sortBy: [SortDescriptor(\.date, order: .reverse)])
-                let dreams = try modelContext.fetch(descriptor)
-
-                let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .iso8601
-                encoder.outputFormatting = .prettyPrinted
-
-                let jsonData = try encoder.encode(dreams)
-
-                // Save to documents directory
-                if let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                    let fileName = "NightTales_Export_\(Date().ISO8601Format()).json"
-                    let fileURL = documentsDirectory.appendingPathComponent(fileName)
-
-                    try jsonData.write(to: fileURL)
-                    exportMessage = "Exported \(dreams.count) dreams to Documents/\(fileName)"
+                guard let dataService = dataService else {
+                    exportMessage = "DataService not available"
+                    isExporting = false
+                    return
                 }
 
+                let fileURL = try await dataService.exportToJSON()
+                exportMessage = "Successfully exported to:\n\(fileURL.lastPathComponent)"
                 isExporting = false
             } catch {
                 exportMessage = "Export failed: \(error.localizedDescription)"
                 isExporting = false
+            }
+        }
+    }
+
+    // MARK: - Import Dreams
+
+    @MainActor
+    func importDreams(from url: URL) {
+        isImporting = true
+
+        Task {
+            do {
+                guard let dataService = dataService else {
+                    importMessage = "DataService not available"
+                    isImporting = false
+                    return
+                }
+
+                let result = try await dataService.importFromJSON(url: url)
+                importMessage = result.message
+                isImporting = false
+            } catch {
+                importMessage = "Import failed: \(error.localizedDescription)"
+                isImporting = false
             }
         }
     }
