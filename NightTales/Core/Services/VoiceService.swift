@@ -8,6 +8,7 @@
 import Foundation
 import Speech
 import AVFoundation
+internal import Combine
 
 @MainActor
 class VoiceService: NSObject, ObservableObject {
