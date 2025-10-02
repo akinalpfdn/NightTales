@@ -12,6 +12,14 @@ struct DreamCardView: View {
     let isGridLayout: Bool
 
     var body: some View {
+        NavigationLink {
+            DreamDetailView(dream: dream)
+        } label: {
+            cardContent
+        }
+    }
+
+    private var cardContent: some View {
         VStack(alignment: .leading, spacing: isGridLayout ? 8 : 12) {
             // Header: Date + Mood
             HStack {

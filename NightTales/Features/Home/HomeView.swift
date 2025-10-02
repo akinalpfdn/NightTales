@@ -14,12 +14,13 @@ struct HomeView: View {
     @State private var gridLayout = true
 
     var body: some View {
-        ZStack {
-            // Background
-            DreamBackground(mood: .neutral)
-                .ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                // Background
+                DreamBackground(mood: .neutral)
+                    .ignoresSafeArea()
 
-            if viewModel.isEmpty {
+                if viewModel.isEmpty {
                 // Empty State
                 EmptyStateView(
                     title: "No Dreams Yet",
@@ -79,7 +80,8 @@ struct HomeView: View {
         .onAppear {
             viewModel.loadDreams()
         }
-    }
+            }
+        }
 
     // MARK: - Search Bar
     private var searchBar: some View {
