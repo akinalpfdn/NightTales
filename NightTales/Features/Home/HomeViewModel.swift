@@ -20,7 +20,8 @@ class HomeViewModel {
     var sortOption: SortOption = .dateDescending
     var errorMessage: String?
 
-    private let dreamService: DreamService
+    let dreamService: DreamService
+    let modelContext: ModelContext
 
     // MARK: - Computed Properties
     var filteredDreams: [Dream] {
@@ -48,6 +49,7 @@ class HomeViewModel {
 
     // MARK: - Init
     init(modelContext: ModelContext) {
+        self.modelContext = modelContext
         self.dreamService = DreamService(modelContext: modelContext)
     }
 

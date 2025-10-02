@@ -69,8 +69,12 @@ struct HomeView: View {
             }
         }
         .sheet(isPresented: $showNewDream) {
-            Text("New Dream View - Coming in Step 4.5")
-                .font(.title)
+            NewDreamView(viewModel: NewDreamViewModel(modelContext: viewModel.modelContext))
+        }
+        .onChange(of: showNewDream) { _, isShowing in
+            if !isShowing {
+                viewModel.loadDreams()
+            }
         }
         .onAppear {
             viewModel.loadDreams()
