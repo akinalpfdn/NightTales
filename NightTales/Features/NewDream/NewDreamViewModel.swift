@@ -27,6 +27,7 @@ class NewDreamViewModel {
     private let aiService: AIService
     private let symbolService: SymbolService
     private let voiceService: VoiceService
+    private var existingDream: Dream?
 
     // MARK: - Computed Properties
     var canSave: Bool {
@@ -37,12 +38,36 @@ class NewDreamViewModel {
         !content.isEmpty && !isInterpreting
     }
 
+    var isEditing: Bool {
+        existingDream != nil
+    }
+
     // MARK: - Init
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, existingDream: Dream? = nil) {
         self.dreamService = DreamService(modelContext: modelContext)
         self.aiService = AIService.shared
         self.symbolService = SymbolService(modelContext: modelContext)
         self.voiceService = VoiceService.shared
+        self.existingDream = existingDream
+
+        // Populate fields if editing
+        if let dream = existingDream {
+            self.title = dream.title
+            self.content = dream.content
+            self.selectedMood = dream.mood
+            self.isLucidDream = dream.isLucidDream
+
+            // Convert symbols to DreamSymbol objects
+            self.detectedSymbols = dream.symbols.map { symbolName in
+                DreamSymbol(
+                    name: symbolName,
+                    category: "General",
+                    frequency: 1,
+                    meanings: [],
+                    culturalContext: ""
+                )
+            }
+        }
     }
 
     // MARK: - Save Dream
@@ -51,16 +76,30 @@ class NewDreamViewModel {
             throw NewDreamError.emptyContent
         }
 
-        let dream = Dream(
-            title: title,
-            content: content,
-            mood: selectedMood,
-            symbols: detectedSymbols.map { $0.name },
-            aiInterpretation: interpretationText,
-            isLucidDream: isLucidDream
-        )
+        if let existingDream = existingDream {
+            // Update existing dream
+            existingDream.title = title
+            existingDream.content = content
+            existingDream.mood = selectedMood
+            existingDream.symbols = detectedSymbols.map { $0.name }
+            existingDream.isLucidDream = isLucidDream
 
-        try dreamService.saveDream(dream)
+            if let interpretationText = interpretationText {
+                existingDream.aiInterpretation = interpretationText
+            }
+        } else {
+            // Create new dream
+            let dream = Dream(
+                title: title,
+                content: content,
+                mood: selectedMood,
+                symbols: detectedSymbols.map { $0.name },
+                aiInterpretation: interpretationText,
+                isLucidDream: isLucidDream
+            )
+
+            try dreamService.saveDream(dream)
+        }
 
         // Save symbols to database
         for symbol in detectedSymbols {

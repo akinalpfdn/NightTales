@@ -14,6 +14,17 @@ struct NewDreamView: View {
     @State private var showInterpretation = false
     @State private var currentError: (any AppError)?
     @State private var showError = false
+    let dreamToEdit: Dream?
+
+    init(viewModel: NewDreamViewModel? = nil, dreamToEdit: Dream? = nil) {
+        self.dreamToEdit = dreamToEdit
+        if let vm = viewModel {
+            self.viewModel = vm
+        } else {
+            // Temporary placeholder - will be replaced in HomeView
+            self.viewModel = NewDreamViewModel(modelContext: ModelContext(try! ModelContainer(for: Dream.self)))
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -103,7 +114,7 @@ struct NewDreamView: View {
 
             Spacer()
 
-            Text("New Dream")
+            Text(viewModel.isEditing ? "Edit Dream" : "New Dream")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
@@ -407,7 +418,11 @@ struct NewDreamView: View {
 
     // MARK: - Save Button
     private var saveButton: some View {
-        LiquidGlassButton("Save Dream", icon: "checkmark.circle.fill", style: .mystic) {
+        LiquidGlassButton(
+            viewModel.isEditing ? "Update Dream" : "Save Dream",
+            icon: "checkmark.circle.fill",
+            style: .mystic
+        ) {
             Task {
                 do {
                     try await viewModel.saveDream()

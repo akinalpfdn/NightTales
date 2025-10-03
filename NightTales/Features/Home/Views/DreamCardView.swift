@@ -17,6 +17,7 @@ struct DreamCardView: View {
             DreamDetailView(dream: dream)
         } label: {
             cardContent
+                .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(
@@ -38,7 +39,7 @@ struct DreamCardView: View {
         VStack(alignment: .leading, spacing: isGridLayout ? 8 : 12) {
             // Header: Date + Mood
             HStack {
-                Text(dream.date.formatted(date: .abbreviated, time: .shortened))
+                Text(dream.date.formatted(date: .abbreviated, time: .omitted))
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.7))
 

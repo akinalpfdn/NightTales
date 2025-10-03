@@ -108,8 +108,11 @@ struct DreamDetailView: View {
                 }
                 .glassEffect(.clear, in: .circle)
 
-                Button {
-                    // Edit action - TODO: implement edit
+                NavigationLink {
+                    NewDreamView(
+                        viewModel: NewDreamViewModel(modelContext: modelContext, existingDream: dream),
+                        dreamToEdit: dream
+                    )
                 } label: {
                     Image(systemName: "pencil")
                         .font(.body)
@@ -139,7 +142,7 @@ struct DreamDetailView: View {
 
                 Spacer()
 
-                Text(dream.date.formatted(date: .abbreviated, time: .shortened))
+                Text(dream.date.formatted(date: .long, time: .omitted))
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.7))
             }
@@ -256,11 +259,6 @@ struct DreamDetailView: View {
     // MARK: - Actions Section
     private var actionsSection: some View {
         VStack(spacing: 12) {
-            // Share Button
-            LiquidGlassButton("Share Dream", icon: "square.and.arrow.up", style: .calm) {
-                showShareSheet = true
-            }
-
             // Similar Dreams Button
             LiquidGlassButton("Find Similar Dreams", icon: "sparkles", style: .mystic) {
                 // TODO: Implement similar dreams
