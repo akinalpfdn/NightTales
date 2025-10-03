@@ -82,6 +82,11 @@ struct SettingsView: View {
                 viewModel.importMessage = "Failed to select file: \(error.localizedDescription)"
             }
         }
+        .sheet(isPresented: $viewModel.showShareSheet) {
+            if let url = viewModel.exportedFileURL {
+                ShareSheet(items: [url])
+            }
+        }
     }
 
     // MARK: - Header

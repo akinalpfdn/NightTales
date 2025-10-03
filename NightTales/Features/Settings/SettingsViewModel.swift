@@ -33,6 +33,8 @@ final class SettingsViewModel {
     var isExporting = false
     var isImporting = false
     var showFilePicker = false
+    var showShareSheet = false
+    var exportedFileURL: URL?
     var exportMessage: String?
     var importMessage: String?
 
@@ -81,7 +83,8 @@ final class SettingsViewModel {
                 }
 
                 let fileURL = try await dataService.exportToJSON()
-                exportMessage = "Successfully exported to:\n\(fileURL.lastPathComponent)"
+                exportedFileURL = fileURL
+                showShareSheet = true
                 isExporting = false
             } catch {
                 exportMessage = "Export failed: \(error.localizedDescription)"
