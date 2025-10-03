@@ -134,8 +134,10 @@ struct NewDreamView: View {
     }
 
     private func moodButton(_ mood: DreamMood) -> some View {
-        Button {
-            withAnimation(.spring(response: 0.3)) {
+        let isSelected = viewModel.selectedMood == mood
+
+        return Button {
+            withAnimation(AnimationManager.bouncySpring) {
                 viewModel.selectedMood = mood
             }
         } label: {
@@ -146,11 +148,16 @@ struct NewDreamView: View {
                     .font(.caption)
                     .fontWeight(.medium)
             }
-            .foregroundStyle(viewModel.selectedMood == mood ? .white : .white.opacity(0.7))
+            .foregroundStyle(isSelected ? .white : .white.opacity(0.7))
             .frame(width: 80, height: 80)
+            .scaleEffect(isSelected ? 1.05 : 1.0)
+            .shadow(
+                color: isSelected ? mood.color.opacity(0.5) : .clear,
+                radius: isSelected ? 15 : 0
+            )
         }
         .glassEffect(
-            viewModel.selectedMood == mood ? .regular.tint(mood.color.opacity(0.6)).interactive() : .clear,
+            isSelected ? .regular.tint(mood.color.opacity(0.6)).interactive() : .clear,
             in: .rect(cornerRadius: 16)
         )
     }

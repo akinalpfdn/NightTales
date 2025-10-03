@@ -10,6 +10,7 @@ import SwiftUI
 struct DreamCardView: View {
     let dream: Dream
     let isGridLayout: Bool
+    @State private var isPressed = false
 
     var body: some View {
         NavigationLink {
@@ -17,6 +18,20 @@ struct DreamCardView: View {
         } label: {
             cardContent
         }
+        .buttonStyle(PlainButtonStyle())
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    withAnimation(AnimationManager.buttonPress) {
+                        isPressed = true
+                    }
+                }
+                .onEnded { _ in
+                    withAnimation(AnimationManager.buttonPress) {
+                        isPressed = false
+                    }
+                }
+        )
     }
 
     private var cardContent: some View {
@@ -92,6 +107,11 @@ struct DreamCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: isGridLayout ? 180 : nil)
         .dreamGlass(.mystic, shape: AnyShape(RoundedRectangle(cornerRadius: 20)))
+        .scaleEffect(isPressed ? 0.97 : 1.0)
+        .shadow(
+            color: Color.dreamPurple.opacity(isPressed ? 0.4 : 0.2),
+            radius: isPressed ? 15 : 10
+        )
     }
 }
 

@@ -10,6 +10,7 @@ import SwiftUI
 struct SymbolBadge: View {
     let symbol: String
     let style: DreamGlassStyle
+    @State private var hasAppeared = false
 
     init(_ symbol: String, style: DreamGlassStyle = .calm) {
         self.symbol = symbol
@@ -23,6 +24,13 @@ struct SymbolBadge: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .dreamGlass(style, shape: .capsule)
+            .scaleEffect(hasAppeared ? 1.0 : 0.5)
+            .opacity(hasAppeared ? 1.0 : 0.0)
+            .onAppear {
+                withAnimation(AnimationManager.badgePop.delay(Double.random(in: 0...0.3))) {
+                    hasAppeared = true
+                }
+            }
     }
 }
 

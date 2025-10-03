@@ -218,8 +218,9 @@ struct HomeView: View {
             GridItem(.flexible(), spacing: 16),
             GridItem(.flexible(), spacing: 16)
         ], spacing: 16) {
-            ForEach(viewModel.filteredDreams) { dream in
+            ForEach(Array(viewModel.filteredDreams.enumerated()), id: \.element.id) { index, dream in
                 DreamCardView(dream: dream, isGridLayout: true)
+                    .fadeSlide(delay: Double(index) * 0.05)
             }
         }
         .padding(.horizontal)
@@ -229,8 +230,9 @@ struct HomeView: View {
     // MARK: - Dream List
     private var dreamList: some View {
         LazyVStack(spacing: 12) {
-            ForEach(viewModel.filteredDreams) { dream in
+            ForEach(Array(viewModel.filteredDreams.enumerated()), id: \.element.id) { index, dream in
                 DreamCardView(dream: dream, isGridLayout: false)
+                    .fadeSlide(delay: Double(index) * 0.05)
             }
         }
         .padding(.horizontal)
