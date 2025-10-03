@@ -13,6 +13,8 @@ import PhotosUI
 
 @main
 struct NightTalesApp: App {
+    @State private var showLaunchScreen = true
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Dream.self,
@@ -30,8 +32,24 @@ struct NightTalesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ZStack {
+                ContentView()
+                    .modelContainer(sharedModelContainer)
+
+                if showLaunchScreen {
+                    LaunchScreenView()
+                        .transition(.opacity)
+                        .zIndex(1)
+                }
+            }
+            .onAppear {
+                // Hide launch screen after 2 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        showLaunchScreen = false
+                    }
+                }
+            }
         }
-        .modelContainer(sharedModelContainer)
     }
 }
