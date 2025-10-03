@@ -12,6 +12,8 @@ struct NewDreamView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: NewDreamViewModel
     @State private var showInterpretation = false
+    @State private var currentError: (any AppError)?
+    @State private var showError = false
 
     var body: some View {
         ZStack {
@@ -67,6 +69,21 @@ struct NewDreamView: View {
             // Loading Overlay
             if viewModel.isInterpreting {
                 LoadingView(message: "Interpreting your dream...")
+            }
+        }
+        .errorAlert(
+            error: $currentError,
+            isPresented: $showError,
+            onRetry: {
+                if currentError is AIError {
+                    await viewModel.interpretWithAI()
+                }
+            }
+        )
+        .onChange(of: viewModel.errorMessage) { _, newError in
+            if let errorMsg = newError {
+                currentError = AIError.interpretationFailed(NSError(domain: "NightTales", code: 1, userInfo: [NSLocalizedDescriptionKey: errorMsg]))
+                showError = true
             }
         }
     }
