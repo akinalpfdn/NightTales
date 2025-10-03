@@ -11,6 +11,7 @@ import SwiftData
 struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
     @State private var showNewDream = false
+    @State private var showQuickVoice = false
     @State private var gridLayout = true
 
     var body: some View {
@@ -70,13 +71,28 @@ struct HomeView: View {
                 }
             }
 
-            // Floating Action Button
+            // Floating Action Buttons
             VStack {
                 Spacer()
                 HStack {
                     Spacer()
-                    FloatingActionButton {
-                        showNewDream = true
+
+                    VStack(spacing: 16) {
+                        // Quick Voice Entry
+                        Button {
+                            showQuickVoice = true
+                        } label: {
+                            Image(systemName: "mic.fill")
+                                .font(.title2)
+                                .foregroundStyle(.white)
+                                .frame(width: 56, height: 56)
+                        }
+                        .glassEffect(.regular.tint(Color.dreamPurple.opacity(0.6)).interactive(), in: .circle)
+
+                        // New Dream
+                        FloatingActionButton {
+                            showNewDream = true
+                        }
                     }
                     .padding(24)
                 }
@@ -85,7 +101,15 @@ struct HomeView: View {
         .sheet(isPresented: $showNewDream) {
             NewDreamView(viewModel: NewDreamViewModel(modelContext: viewModel.modelContext))
         }
+        .sheet(isPresented: $showQuickVoice) {
+            QuickVoiceEntryView(viewModel: QuickVoiceEntryViewModel(modelContext: viewModel.modelContext))
+        }
         .onChange(of: showNewDream) { _, isShowing in
+            if !isShowing {
+                viewModel.loadDreams()
+            }
+        }
+        .onChange(of: showQuickVoice) { _, isShowing in
             if !isShowing {
                 viewModel.loadDreams()
             }

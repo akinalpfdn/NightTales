@@ -29,7 +29,7 @@ class VoiceService: NSObject, ObservableObject {
     // MARK: - Singleton
     static let shared = VoiceService()
 
-    private override init() {
+    override init() {
         super.init()
         authorizationStatus = SFSpeechRecognizer.authorizationStatus()
     }

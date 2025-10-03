@@ -62,6 +62,22 @@ struct DreamDetailView: View {
         } message: {
             Text("Are you sure you want to delete this dream? This action cannot be undone.")
         }
+        .confirmationDialog("Share Dream", isPresented: $showShareSheet) {
+            Button("Share as Text") {
+                let text = ShareManager.shared.shareDreamAsText(dream: dream, includeInterpretation: true)
+                ShareManager.shared.presentShareSheet(items: [text])
+            }
+
+            Button("Share as Image") {
+                if let image = ShareManager.shared.shareDreamAsImage(dream: dream, includeInterpretation: false) {
+                    ShareManager.shared.presentShareSheet(items: [image])
+                }
+            }
+
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Choose how you want to share this dream")
+        }
     }
 
     // MARK: - Header
@@ -79,8 +95,18 @@ struct DreamDetailView: View {
 
             Spacer()
 
-            // Edit and Delete buttons
+            // Share, Edit and Delete buttons
             HStack(spacing: 12) {
+                Button {
+                    showShareSheet = true
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.body)
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                }
+                .glassEffect(.clear, in: .circle)
+
                 Button {
                     // Edit action - TODO: implement edit
                 } label: {
