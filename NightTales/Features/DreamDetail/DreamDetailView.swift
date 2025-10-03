@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DreamDetailView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     let dream: Dream
     @State private var showInterpretation = true
     @State private var showDeleteConfirmation = false
@@ -56,8 +58,7 @@ struct DreamDetailView: View {
         .alert("Delete Dream", isPresented: $showDeleteConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                // Handle delete
-                dismiss()
+                deleteDream()
             }
         } message: {
             Text("Are you sure you want to delete this dream? This action cannot be undone.")
@@ -264,6 +265,19 @@ struct DreamDetailView: View {
             LiquidGlassButton("Find Similar Dreams", icon: "sparkles", style: .mystic) {
                 // TODO: Implement similar dreams
             }
+        }
+    }
+
+    // MARK: - Delete Dream
+    private func deleteDream() {
+        modelContext.delete(dream)
+        do {
+            try modelContext.save()
+            HapticManager.shared.success()
+            dismiss()
+        } catch {
+            HapticManager.shared.error()
+            print("Failed to delete dream: \(error)")
         }
     }
 }

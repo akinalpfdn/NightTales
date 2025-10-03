@@ -56,6 +56,7 @@ class HomeViewModel {
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         self.dreamService = DreamService(modelContext: modelContext)
+        loadDreams() // Load immediately on init
     }
 
     // MARK: - Load Dreams
