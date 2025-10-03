@@ -70,6 +70,8 @@ class NewDreamViewModel {
                 meaning: symbol.meanings.first ?? ""
             )
         }
+
+        HapticManager.shared.success()
     }
 
     // MARK: - Interpret with AI
@@ -89,9 +91,12 @@ class NewDreamViewModel {
             // Extract symbols
             detectedSymbols = try await aiService.extractSymbols(content: content)
 
+            HapticManager.shared.success()
+
         } catch {
             errorMessage = "AI interpretation failed: \(error.localizedDescription)"
             interpretation = nil
+            HapticManager.shared.error()
         }
 
         isInterpreting = false

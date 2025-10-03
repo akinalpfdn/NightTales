@@ -142,8 +142,10 @@ final class SettingsViewModel {
 
             try modelContext.save()
 
+            HapticManager.shared.success()
             showDeleteConfirmation = false
         } catch {
+            HapticManager.shared.error()
             print("Failed to delete data: \(error)")
         }
     }
