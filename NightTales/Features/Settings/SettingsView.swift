@@ -417,8 +417,18 @@ struct SettingsView: View {
 
             VStack(spacing: 12) {
                 aboutRow(title: "Version", value: "1.0.0")
-                aboutRow(title: "Privacy Policy", value: "View", showChevron: true)
-                aboutRow(title: "Terms of Service", value: "View", showChevron: true)
+
+                Button {
+                    openPrivacyPolicy()
+                } label: {
+                    aboutRowButton(title: "Privacy Policy")
+                }
+
+                Button {
+                    openTermsOfService()
+                } label: {
+                    aboutRowButton(title: "Terms of Service")
+                }
             }
             .padding(16)
             .dreamGlass(.calm, shape: AnyShape(RoundedRectangle(cornerRadius: 16)))
@@ -450,6 +460,36 @@ struct SettingsView: View {
                     .foregroundStyle(.white.opacity(0.6))
                     .font(.caption)
             }
+        }
+    }
+
+    private func aboutRowButton(title: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.white.opacity(0.8))
+
+            Spacer()
+
+            Text("View")
+                .font(.subheadline)
+                .foregroundStyle(.white)
+
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.white.opacity(0.6))
+                .font(.caption)
+        }
+    }
+
+    private func openPrivacyPolicy() {
+        if let url = URL(string: "https://github.com/akinalpfdn/NightTales/tree/main/PRIVACY_POLICY.md") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    private func openTermsOfService() {
+        if let url = URL(string: "https://github.com/akinalpfdn/NightTales/tree/main/TERMS_OF_SERVICE.md") {
+            UIApplication.shared.open(url)
         }
     }
 
