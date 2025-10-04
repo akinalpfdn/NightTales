@@ -58,13 +58,25 @@ class AIService {
 
         Interpretation Style: \(styleGuidance)
 
-        Please provide a comprehensive interpretation with:
-        1. Psychological Analysis: What might this dream reveal about the dreamer's subconscious mind, emotions, or current life situation?
-        2. Symbolic Meaning: What do the key symbols and themes represent?
-        3. Cultural Context: How might different cultural traditions interpret these symbols?
-        4. Possible Meanings: 3-5 different interpretations or insights.
+        Please provide a comprehensive interpretation as a JSON object with these EXACT keys:
 
-        Be insightful, empathetic, and thought-provoking. Format as JSON with keys: psychologicalAnalysis, symbolicMeaning, culturalContext, possibleMeanings (array of strings).
+        1. "psychologicalAnalysis": A single paragraph (as STRING) explaining what this dream reveals about the subconscious mind, emotions, or life situation.
+
+        2. "symbolicMeaning": A single paragraph (as STRING) explaining what the key symbols and themes represent overall.
+
+        3. "culturalContext": A single paragraph (as STRING) explaining how different cultures might interpret these symbols.
+
+        4. "possibleMeanings": An array of 3-5 strings, each being a different interpretation or insight.
+
+        IMPORTANT: psychologicalAnalysis, symbolicMeaning, and culturalContext must be STRINGS (paragraphs), NOT objects or dictionaries.
+
+        Example format:
+        {
+          "psychologicalAnalysis": "This dream suggests...",
+          "symbolicMeaning": "The symbols in this dream...",
+          "culturalContext": "In various cultures...",
+          "possibleMeanings": ["First meaning", "Second meaning", "Third meaning"]
+        }
         """
 
         let response = try await session.respond(to: prompt)
@@ -126,28 +138,42 @@ class AIService {
         let session = LanguageModelSession()
 
         let prompt = """
-        Analyze this dream and extract the most important symbols:
+        List the main symbols from this text as a simple JSON array:
 
         "\(content)"
 
-        Identify 3-8 key symbols and categorize them (e.g., people, animals, nature, objects, emotions, places).
-        For each symbol, provide:
-        - name: the symbol name
-        - category: one of (people, animals, nature, objects, emotions, places, other)
-        - meaning: brief interpretation of what this symbol typically represents
+        Extract 3-8 key symbols (objects, animals, nature elements, places, emotions).
+        Return ONLY a JSON array like this:
+        [
+          {"name": "butterfly", "category": "animals", "meaning": "transformation"},
+          {"name": "garden", "category": "places", "meaning": "growth"}
+        ]
 
-        Format as JSON array with objects containing: name, category, meaning.
+        Categories: people, animals, nature, objects, emotions, places, other
         """
 
         let response = try await session.respond(to: prompt)
 
+        // Clean JSON
+        var cleanedContent = response.content
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```json\n", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```json", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "\n```", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```", with: "")
+        cleanedContent = cleanedContent.trimmingCharacters(in: .whitespacesAndNewlines)
+        cleanedContent = fixJSONNewlines(cleanedContent)
+
+        print("🔍 Symbols Response: \(cleanedContent.prefix(200))...")
+
         // Parse JSON and convert to DreamSymbol objects
-        guard let data = response.content.data(using: .utf8),
+        guard let data = cleanedContent.data(using: .utf8),
               let jsonArray = try? JSONSerialization.jsonObject(with: data) as? [[String: String]] else {
+            print("❌ Symbol parsing failed")
             return []
         }
 
-        return jsonArray.compactMap { dict in
+        let symbols: [DreamSymbol] = jsonArray.compactMap { dict -> DreamSymbol? in
             guard let name = dict["name"],
                   let category = dict["category"],
                   let meaning = dict["meaning"] else {
@@ -162,6 +188,9 @@ class AIService {
                 culturalContext: nil
             )
         }
+
+        print("✅ Extracted \(symbols.count) symbols: \(symbols.map { $0.name }.joined(separator: ", "))")
+        return symbols
     }
 
     // MARK: - Pattern Finding
