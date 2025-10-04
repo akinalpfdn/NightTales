@@ -53,15 +53,15 @@ struct DreamCardView: View {
                 .font(isGridLayout ? .subheadline : .headline)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
-                .lineLimit(isGridLayout ? 2 : 1)
+                .lineLimit(isGridLayout ? 1 : 1)
 
-            if !isGridLayout {
+                //if !isGridLayout {
                 // Content preview (only in list mode)
                 Text(dream.content)
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.8))
-                    .lineLimit(2)
-            }
+                    .lineLimit(4)
+           // }
 
             // Symbols (max 3)
             if !dream.symbols.isEmpty {
@@ -106,7 +106,7 @@ struct DreamCardView: View {
         }
         .padding(isGridLayout ? 12 : 16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: isGridLayout ? 180 : nil)
+        .frame(height: isGridLayout ? 240 : nil)
         .dreamGlass(.mystic, shape: AnyShape(RoundedRectangle(cornerRadius: 20)))
         .scaleEffect(isPressed ? 0.97 : 1.0)
         .shadow(
