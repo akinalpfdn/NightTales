@@ -11,6 +11,7 @@ import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @Bindable var viewModel: SettingsViewModel
+    @State private var showPaywall = false
 
     var body: some View {
         ZStack {
@@ -381,8 +382,8 @@ struct SettingsView: View {
                 .dreamGlass(.calm, shape: AnyShape(RoundedRectangle(cornerRadius: 16)))
 
                 // Upgrade Button
-                NavigationLink {
-                    PaywallView()
+                Button {
+                    showPaywall = true
                 } label: {
                     HStack {
                         Image(systemName: "star.fill")
@@ -402,6 +403,9 @@ struct SettingsView: View {
                 }
                 .dreamGlass(.vivid, shape: AnyShape(RoundedRectangle(cornerRadius: 12)))
             }
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
         }
     }
 
