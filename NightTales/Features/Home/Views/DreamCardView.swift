@@ -65,17 +65,20 @@ struct DreamCardView: View {
 
             // Symbols (max 3)
             if !dream.symbols.isEmpty {
-                HStack(spacing: 6) {
-                    ForEach(dream.symbols.prefix(3), id: \.self) { symbol in
-                        SymbolBadge(symbol, style: .calm)
-                    }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(dream.symbols.prefix(3), id: \.self) { symbol in
+                            SymbolBadge(symbol, style: .calm, compact: true)
+                        }
 
-                    if dream.symbols.count > 3 {
-                        Text("+\(dream.symbols.count - 3)")
-                            .font(.caption2)
-                            .foregroundStyle(.white.opacity(0.6))
+                        if dream.symbols.count > 3 {
+                            Text("+\(dream.symbols.count - 3)")
+                                .font(.caption2)
+                                .foregroundStyle(.white.opacity(0.6))
+                        }
                     }
                 }
+                .frame(height: 24)
             }
 
             Spacer()
