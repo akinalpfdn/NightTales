@@ -353,9 +353,9 @@ struct NewDreamView: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Possible Meanings:")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color.dreamPurple)
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
 
                     ForEach(Array(interpretation.possibleMeanings.enumerated()), id: \.offset) { index, meaning in
                         HStack(alignment: .top, spacing: 8) {
@@ -374,15 +374,17 @@ struct NewDreamView: View {
     }
 
     private func interpretationSection(title: String, content: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundStyle(Color.dreamPurple)
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
 
             Text(content)
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.9))
+                .font(.body)
+                .foregroundColor(.white)
+                .opacity(0.95)
+                .lineSpacing(4)
         }
     }
 

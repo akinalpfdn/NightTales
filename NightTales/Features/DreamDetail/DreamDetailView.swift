@@ -84,16 +84,6 @@ struct DreamDetailView: View {
     // MARK: - Header
     private var header: some View {
         HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.title3)
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-            }
-            .glassEffect(.clear, in: .circle)
-
             Spacer()
 
             // Share, Edit and Delete buttons
