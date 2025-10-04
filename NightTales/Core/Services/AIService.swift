@@ -227,6 +227,18 @@ class AIService {
 
         let response = try await session.respond(to: prompt)
 
+        // Clean JSON
+        var cleanedContent = response.content
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```json\n", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```json", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "\n```", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```", with: "")
+        cleanedContent = cleanedContent.trimmingCharacters(in: .whitespacesAndNewlines)
+        cleanedContent = fixJSONNewlines(cleanedContent)
+
+        print("🔍 Pattern Response: \(cleanedContent.prefix(200))...")
+
         // Parse JSON response
         struct PatternResponse: Codable {
             let recurringSymbols: [String]
@@ -234,8 +246,8 @@ class AIService {
             let recommendations: [String]
         }
 
-        guard let data = response.content.data(using: .utf8),
-              let patternResponse = try? JSONDecoder().decode(PatternResponse.self, from: data) else {
+        guard let data = cleanedContent.data(using: .utf8) else {
+            print("❌ Failed to convert pattern data")
             return DreamPattern(
                 recurringSymbols: [],
                 emotionalTrends: ["Unable to detect patterns from current data"],
@@ -243,11 +255,22 @@ class AIService {
             )
         }
 
-        return DreamPattern(
-            recurringSymbols: patternResponse.recurringSymbols,
-            emotionalTrends: patternResponse.emotionalTrends,
-            recommendations: patternResponse.recommendations
-        )
+        do {
+            let patternResponse = try JSONDecoder().decode(PatternResponse.self, from: data)
+            print("✅ Pattern analysis successful")
+            return DreamPattern(
+                recurringSymbols: patternResponse.recurringSymbols,
+                emotionalTrends: patternResponse.emotionalTrends,
+                recommendations: patternResponse.recommendations
+            )
+        } catch {
+            print("❌ Pattern parsing error: \(error)")
+            return DreamPattern(
+                recurringSymbols: [],
+                emotionalTrends: ["Unable to detect patterns from current data"],
+                recommendations: ["Record more dreams to identify meaningful patterns"]
+            )
+        }
     }
 
     // MARK: - Recommendations
