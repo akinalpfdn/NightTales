@@ -117,6 +117,8 @@ struct HomeView: View {
         .onAppear {
             viewModel.loadDreams()
         }
+               .scrollDismissesKeyboard(.interactively)
+
             }
         }
 

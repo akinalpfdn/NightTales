@@ -32,6 +32,9 @@ struct NewDreamView: View {
             // Background
             DreamBackground(mood: viewModel.selectedMood)
                 .ignoresSafeArea()
+                .onTapGesture {
+                    hideKeyboard()
+                }
 
             ScrollView {
                 VStack(spacing: 20) {
@@ -98,6 +101,8 @@ struct NewDreamView: View {
                 showError = true
             }
         }
+                .scrollDismissesKeyboard(.interactively)
+
     }
 
     // MARK: - Header
