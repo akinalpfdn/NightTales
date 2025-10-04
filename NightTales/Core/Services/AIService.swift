@@ -32,18 +32,31 @@ class AIService {
     // MARK: - Dream Interpretation
     /// Interprets a dream with psychological and cultural analysis
     @MainActor
-    func interpretDream(content: String, mood: DreamMood) async throws -> DreamInterpretation {
+    func interpretDream(content: String, mood: DreamMood, style: InterpretationStyle = .mixed) async throws -> DreamInterpretation {
         guard isAvailable else {
             throw AIServiceError.modelUnavailable
         }
 
         let session = LanguageModelSession()
 
+        // Customize prompt based on interpretation style
+        let styleGuidance: String
+        switch style {
+        case .psychological:
+            styleGuidance = "Focus primarily on psychological analysis, exploring the subconscious mind, emotions, and personal growth. Briefly mention symbolism and cultural context, but emphasize the psychological perspective."
+        case .cultural:
+            styleGuidance = "Focus primarily on cultural symbolism and traditional meanings from various cultures. Briefly mention psychological aspects, but emphasize cultural interpretations and spiritual significance."
+        case .mixed:
+            styleGuidance = "Provide a balanced interpretation combining psychological analysis, symbolic meaning, and cultural context equally."
+        }
+
         let prompt = """
         You are an expert dream interpreter combining psychology, symbolism, and cultural analysis.
 
         Dream Content: "\(content)"
         Emotional Tone: \(mood.rawValue)
+
+        Interpretation Style: \(styleGuidance)
 
         Please provide a comprehensive interpretation with:
         1. Psychological Analysis: What might this dream reveal about the dreamer's subconscious mind, emotions, or current life situation?

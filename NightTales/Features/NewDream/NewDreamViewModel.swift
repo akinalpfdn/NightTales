@@ -121,10 +121,15 @@ class NewDreamViewModel {
         errorMessage = nil
 
         do {
+            // Get user's preferred interpretation style from settings
+            let styleRawValue = UserDefaults.standard.string(forKey: "interpretationStyle") ?? "Mixed"
+            let style = InterpretationStyle(rawValue: styleRawValue) ?? .mixed
+
             // Get interpretation
             interpretation = try await aiService.interpretDream(
                 content: content,
-                mood: selectedMood
+                mood: selectedMood,
+                style: style
             )
 
             // Extract symbols
