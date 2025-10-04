@@ -68,6 +68,12 @@ struct HomeView: View {
                             }
                         }
                     }
+                    .simultaneousGesture(
+                        TapGesture()
+                            .onEnded { _ in
+                                hideKeyboard()
+                            }
+                    )
                 }
             }
 

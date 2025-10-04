@@ -80,6 +80,12 @@ struct NewDreamView: View {
                 .padding()
                 .padding(.bottom, 50)
             }
+            .simultaneousGesture(
+                TapGesture()
+                    .onEnded { _ in
+                        hideKeyboard()
+                    }
+            )
 
             // Loading Overlay
             if viewModel.isInterpreting {
