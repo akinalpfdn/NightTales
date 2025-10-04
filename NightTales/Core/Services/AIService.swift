@@ -56,19 +56,50 @@ class AIService {
 
         let response = try await session.respond(to: prompt)
 
+        // Clean up response - remove markdown code blocks if present
+        var cleanedContent = response.content
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Remove markdown code blocks
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```json\n", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```json", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "\n```", with: "")
+        cleanedContent = cleanedContent.replacingOccurrences(of: "```", with: "")
+        cleanedContent = cleanedContent.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Fix JSON formatting - escape newlines that aren't already escaped
+        // Replace actual newlines with escaped newlines in string values
+        cleanedContent = fixJSONNewlines(cleanedContent)
+
+        print("🔍 AI Response (cleaned): \(cleanedContent.prefix(200))...")
+
         // Parse JSON response
-        guard let data = response.content.data(using: .utf8),
-              let interpretation = try? JSONDecoder().decode(DreamInterpretation.self, from: data) else {
-            // Fallback if JSON parsing fails
+        guard let data = cleanedContent.data(using: .utf8) else {
+            print("❌ Failed to convert to data")
             return DreamInterpretation(
-                psychologicalAnalysis: response.content,
-                symbolicMeaning: "Unable to parse symbolic meaning",
-                culturalContext: "Unable to parse cultural context",
+                psychologicalAnalysis: "Unable to process AI response",
+                symbolicMeaning: "Please try again",
+                culturalContext: "Analysis unavailable",
                 possibleMeanings: []
             )
         }
 
-        return interpretation
+        do {
+            let interpretation = try JSONDecoder().decode(DreamInterpretation.self, from: data)
+            print("✅ JSON parsed successfully")
+            return interpretation
+        } catch {
+            print("❌ JSON parsing error: \(error)")
+            print("Raw content: \(cleanedContent)")
+
+            // Fallback: return raw text
+            return DreamInterpretation(
+                psychologicalAnalysis: cleanedContent,
+                symbolicMeaning: "Raw AI response (JSON parsing failed)",
+                culturalContext: "Please review the psychological analysis section",
+                possibleMeanings: []
+            )
+        }
     }
 
     // MARK: - Symbol Extraction
@@ -210,6 +241,31 @@ class AIService {
         }
 
         return recommendations
+    }
+
+    // MARK: - Helper: Fix JSON Newlines
+    private func fixJSONNewlines(_ json: String) -> String {
+        var result = ""
+        var inString = false
+        var previousChar: Character?
+
+        for char in json {
+            // Track if we're inside a string value
+            if char == "\"" && previousChar != "\\" {
+                inString.toggle()
+            }
+
+            // If we're in a string and encounter a newline, escape it
+            if inString && char == "\n" {
+                result.append("\\n")
+            } else {
+                result.append(char)
+            }
+
+            previousChar = char
+        }
+
+        return result
     }
 }
 
