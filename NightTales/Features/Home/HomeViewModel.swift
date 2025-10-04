@@ -40,6 +40,18 @@ class HomeViewModel {
             }
         }
 
+        // Sort based on sort option
+        switch sortOption {
+        case .dateDescending:
+            result.sort { $0.date > $1.date }
+        case .dateAscending:
+            result.sort { $0.date < $1.date }
+        case .titleAscending:
+            result.sort { $0.title.localizedCompare($1.title) == .orderedAscending }
+        case .titleDescending:
+            result.sort { $0.title.localizedCompare($1.title) == .orderedDescending }
+        }
+
         return result
     }
 
@@ -95,8 +107,14 @@ class HomeViewModel {
 
     // MARK: - Sort Dreams
     func sortDreams(by option: SortOption) {
+        print("🔄 Sorting dreams by: \(option)")
         sortOption = option
-        loadDreams()
+        // Force UI refresh by triggering dreams array change
+        dreams = dreams
+        print("📊 Dreams count: \(dreams.count), Filtered: \(filteredDreams.count)")
+        if !filteredDreams.isEmpty {
+            print("First dream: \(filteredDreams[0].title) - \(filteredDreams[0].date)")
+        }
     }
 
     // MARK: - Clear Filters

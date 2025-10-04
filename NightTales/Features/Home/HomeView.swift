@@ -192,23 +192,23 @@ struct HomeView: View {
 
             Spacer()
 
-            // Sort Menu
-            Menu {
-                Button("Date (Newest)") { viewModel.sortDreams(by: .dateDescending) }
-                Button("Date (Oldest)") { viewModel.sortDreams(by: .dateAscending) }
-                Button("Title (A-Z)") { viewModel.sortDreams(by: .titleAscending) }
-                Button("Title (Z-A)") { viewModel.sortDreams(by: .titleDescending) }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "arrow.up.arrow.down")
-                    Text("Sort")
-                }
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-            }
-            .glassEffect(.regular.tint(Color.dreamPurple.opacity(0.5)), in: .capsule)
+            // Sort Menu - Hidden for now
+            // Menu {
+            //     Button("Date (Newest)") { viewModel.sortDreams(by: .dateDescending) }
+            //     Button("Date (Oldest)") { viewModel.sortDreams(by: .dateAscending) }
+            //     Button("Title (A-Z)") { viewModel.sortDreams(by: .titleAscending) }
+            //     Button("Title (Z-A)") { viewModel.sortDreams(by: .titleDescending) }
+            // } label: {
+            //     HStack(spacing: 6) {
+            //         Image(systemName: "arrow.up.arrow.down")
+            //         Text("Sort")
+            //     }
+            //     .font(.subheadline.weight(.medium))
+            //     .foregroundStyle(.white)
+            //     .padding(.horizontal, 16)
+            //     .padding(.vertical, 8)
+            // }
+            // .glassEffect(.regular.tint(Color.dreamPurple.opacity(0.5)), in: .capsule)
         }
     }
 
