@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		F42344582E91237200BA29A2 /* NightTales.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = NightTales.storekit; sourceTree = "<group>"; };
 		F46698692E8EE2950077223B /* NightTales.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NightTales.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -32,6 +33,7 @@
 		F46698602E8EE2940077223B = {
 			isa = PBXGroup;
 			children = (
+				F42344582E91237200BA29A2 /* NightTales.storekit */,
 				F466986B2E8EE2950077223B /* NightTales */,
 				F466986A2E8EE2950077223B /* Products */,
 			);

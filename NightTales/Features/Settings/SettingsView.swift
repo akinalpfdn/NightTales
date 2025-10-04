@@ -26,6 +26,9 @@ struct SettingsView: View {
                     // Reminders Section
                     remindersSection
 
+                    // Premium Section
+                    premiumSection
+
                     // Interpretation Style Section
                     interpretationStyleSection
 
@@ -301,6 +304,103 @@ struct SettingsView: View {
                     .padding(16)
                 }
                 .dreamGlass(.nightmare, shape: AnyShape(RoundedRectangle(cornerRadius: 12)))
+            }
+        }
+    }
+
+    // MARK: - Premium Section
+
+    private var premiumSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            sectionTitle("Premium", icon: "star.fill")
+
+            if PurchaseManager.shared.hasPremium {
+                // Premium Active
+                VStack(spacing: 12) {
+                    HStack {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundStyle(Color.dreamPurple)
+                            .font(.title2)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Premium Active")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+
+                            Text("You have lifetime access to all features")
+                                .font(.caption)
+                                .foregroundStyle(.white.opacity(0.7))
+                        }
+
+                        Spacer()
+                    }
+                    .padding(16)
+                }
+                .dreamGlass(.mystic, shape: AnyShape(RoundedRectangle(cornerRadius: 16)))
+
+                // Restore Button (in case user needs it)
+                Button {
+                    Task {
+                        await PurchaseManager.shared.restorePurchases()
+                    }
+                } label: {
+                    HStack {
+                        Label("Restore Purchases", systemImage: "arrow.clockwise")
+                            .foregroundStyle(.white)
+                            .font(.subheadline.weight(.medium))
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.white.opacity(0.6))
+                            .font(.caption)
+                    }
+                    .padding(16)
+                }
+                .dreamGlass(.calm, shape: AnyShape(RoundedRectangle(cornerRadius: 12)))
+
+            } else {
+                // Free Tier
+                VStack(spacing: 12) {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Free Plan")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+
+                            let remaining = AIUsageManager.shared.remainingFreeInterpretations
+                            Text("\(remaining) AI interpretation\(remaining == 1 ? "" : "s") remaining this month")
+                                .font(.caption)
+                                .foregroundStyle(.white.opacity(0.7))
+                        }
+
+                        Spacer()
+                    }
+                    .padding(16)
+                }
+                .dreamGlass(.calm, shape: AnyShape(RoundedRectangle(cornerRadius: 16)))
+
+                // Upgrade Button
+                NavigationLink {
+                    PaywallView()
+                } label: {
+                    HStack {
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(Color.dreamPurple)
+
+                        Text("Upgrade to Premium")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.white.opacity(0.6))
+                            .font(.caption)
+                    }
+                    .padding(16)
+                }
+                .dreamGlass(.vivid, shape: AnyShape(RoundedRectangle(cornerRadius: 12)))
             }
         }
     }

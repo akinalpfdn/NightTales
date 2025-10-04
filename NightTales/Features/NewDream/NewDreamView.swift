@@ -14,6 +14,7 @@ struct NewDreamView: View {
     @State private var showInterpretation = false
     @State private var currentError: (any AppError)?
     @State private var showError = false
+    @State private var showPaywall = false
     let dreamToEdit: Dream?
 
     init(viewModel: NewDreamViewModel? = nil, dreamToEdit: Dream? = nil) {
@@ -290,35 +291,56 @@ struct NewDreamView: View {
 
     // MARK: - AI Interpret Button
     private var aiInterpretButton: some View {
-        Button {
-            Task {
-                await viewModel.interpretWithAI()
-                if viewModel.interpretation != nil {
-                    withAnimation {
-                        showInterpretation = true
+        VStack(spacing: 12) {
+            Button {
+                // Check if user can use AI
+                if AIUsageManager.shared.canUseAI() {
+                    Task {
+                        await viewModel.interpretWithAI()
+                        if viewModel.interpretation != nil {
+                            withAnimation {
+                                showInterpretation = true
+                            }
+                            // Record usage after successful interpretation
+                            AIUsageManager.shared.recordUsage()
+                        }
+                    }
+                } else {
+                    // Show paywall
+                    showPaywall = true
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "sparkles")
+                        .font(.title3)
+
+                    Text("Interpret with AI")
+                        .font(.headline)
+
+                    if viewModel.isInterpreting {
+                        ProgressView()
+                            .tint(.white)
                     }
                 }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
             }
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "sparkles")
-                    .font(.title3)
+            .disabled(!viewModel.canInterpret)
+            .opacity(viewModel.canInterpret ? 1.0 : 0.5)
+            .dreamGlass(.mystic, shape: AnyShape(RoundedRectangle(cornerRadius: 16)))
 
-                Text("Interpret with AI")
-                    .font(.headline)
-
-                if viewModel.isInterpreting {
-                    ProgressView()
-                        .tint(.white)
-                }
+            // Show remaining interpretations for free users
+            if !PurchaseManager.shared.hasPremium {
+                let remaining = AIUsageManager.shared.remainingFreeInterpretations
+                Text("\(remaining) free interpretation\(remaining == 1 ? "" : "s") remaining this month")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
             }
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 18)
         }
-        .disabled(!viewModel.canInterpret)
-        .opacity(viewModel.canInterpret ? 1.0 : 0.5)
-        .dreamGlass(.mystic, shape: AnyShape(RoundedRectangle(cornerRadius: 16)))
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
     }
 
     // MARK: - Interpretation Card
