@@ -1,7 +1,7 @@
 # 🌙 NightTales - AI Dream Journal
 
 <p align="center">
-  <img src="screenshots/app-icon.png" width="200" alt="NightTales App Icon">
+  <img src="NightTales/Assets.xcassets/AppIcon.appiconset/AppIcon~ios-marketing 1.png" width="200" alt="NightTales App Icon">
 </p>
 
 <p align="center">
